@@ -4,6 +4,7 @@
 #define min(a,b) (((a)<(b))?(a):(b))
 #define max(a,b) (((a)>(b))?(a):(b))
 
+#define bound(x, a, b)	(min( max(x, a), b ))
 
 float maxOf( float* arr, const int N );
 

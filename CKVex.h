@@ -2,6 +2,14 @@
 #define __CKVex__
 
 
+
+// Use a floating point number in Volts by default
+#define MainBatteryVoltage()	(nAvgBatteryLevel / 1000.0)
+
+
+#define isPressed(port)		(!SensorValue[(port)])
+
+
 #ifdef VEX2
 // VEX EDR Cortex 2.0
 
@@ -33,6 +41,13 @@
 	#define DrawSizeY		 44
 
 #endif
+
+
+
+
+#define TicksPerRev_393Standard			627.2
+#define TicksPerRev_393HighSpeed		392
+#define TicksPerRev_393Turbo				261.333
 
 
 #endif
