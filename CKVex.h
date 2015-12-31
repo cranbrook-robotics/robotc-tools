@@ -48,6 +48,28 @@
 #define TicksPerRev_393Standard			627.2
 #define TicksPerRev_393HighSpeed		392
 #define TicksPerRev_393Turbo				261.333
+#define Standard393TicksPerRev		627.2
+#define HighSpeed393TicksPerRev		392
+#define Turbo393TicksPerRev				261.333
+
+#define Standard393RPM		100
+#define HighSpeed393RPM		160
+#define Turbo393RPM				240
+
+
+#define SingleWireEncoderTicksPerRev	180
+
+
+
+void uartPrintln(TUARTs uartPort, const char* str){
+	const int N = strlen(str);
+	for( int i = 0; i < N; ++i ){
+		sendChar(uartPort, str[i]);
+	}
+	sendChar(uartPort, '\n');
+	sendChar(uartPort, '\r');
+}
+
 
 
 #endif
