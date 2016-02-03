@@ -1,6 +1,8 @@
 #ifndef __CKVex__
 #define __CKVex__
 
+#pragma systemFile
+
 
 
 // Use a floating point number in Volts by default
@@ -18,15 +20,14 @@
 	#define JoyChRX Ch1
 	#define JoyChRY Ch2
 
-	//TODO: 100 or 127?
-	#define MotorSpeedMax			127.0
+	#define MotorPowerMax			127.0
 	#define	ControllerJoyMax	127.0
 
 	//TODO: will this ever apply to cortex?
 	#define DrawSizeX		10
 	#define DrawSizeY		10
 
-#else//==================
+#else if defined(VexIQ)//==================
 // VEX IQ
 
 	#define JoyChLX ChB
@@ -34,7 +35,7 @@
 	#define JoyChRX ChC
 	#define JoyChRY ChD
 
-	#define MotorSpeedMax			100.0
+	#define MotorPowerMax			100.0
 	#define	ControllerJoyMax	100.0
 
 	#define DrawSizeX		128
@@ -44,10 +45,17 @@
 
 
 
+enum Motor393GearBox {
+	M393Standard,
+	M393HighSpeed,
+	M393Turbo
+};
+
 
 #define TicksPerRev_393Standard			627.2
 #define TicksPerRev_393HighSpeed		392
 #define TicksPerRev_393Turbo				261.333
+
 #define Standard393TicksPerRev		627.2
 #define HighSpeed393TicksPerRev		392
 #define Turbo393TicksPerRev				261.333
@@ -68,6 +76,12 @@ void uartPrintln(TUARTs uartPort, const char* str){
 	}
 	sendChar(uartPort, '\n');
 	sendChar(uartPort, '\r');
+}
+
+
+
+float potentiometer( tSensors port ){
+	return SensorValue[port] / 4095.0;
 }
 
 
