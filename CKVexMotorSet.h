@@ -3,16 +3,20 @@
 
 #pragma systemFile
 
+#include <CKVex.h>
 
-#ifndef CKMotorSetSize
-#define CKMotorSetSize 1
+
+
+#ifndef CKMotorSetCapacity
+#define CKMotorSetCapacity 12
 #endif
 
 
 
 
 struct MotorSet {
-	tMotor ports[CKMotorSetSize];
+	tMotor ports[CKMotorSetCapacity];
+	int NMotors;
 	float power; // proportional; in [-1 to 1]
 };
 
@@ -22,8 +26,11 @@ struct MotorSet {
 
 void updatePower( MotorSet& self );
 
-void MotorSetInit( MotorSet& self, tMotor* ports ){
-	for( int i = 0; i < CKMotorSetSize; ++i )
+void MotorSetInit( MotorSet& self, tMotor* ports, int nMotors ){
+	ASSERT( nMotors <= CKMotorSetCapacity );
+
+	self.NMotors = nMotors;
+	for( int i = 0; i < self.NMotors; ++i )
 		self.ports[i] = ports[i];
 	updatePower( self );
 }
@@ -33,8 +40,8 @@ void MotorSetInit( MotorSet& self, tMotor* ports ){
 
 
 void updatePower( MotorSet& self ){
-	int power = (int)round( self.power * MotorPowerMax );
-	for( int i = 0; i < CKMotorSetSize; ++i )
+	int power = motorPower( self.power );
+	for( int i = 0; i < self.NMotors; ++i )
 		motor[ self.ports[i] ] = power;
 }
 

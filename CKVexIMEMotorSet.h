@@ -19,8 +19,8 @@ struct IMEMotorSet {
 
 
 
-void IMEMotorSetInit( IMEMotorSet& self, tMotor* ports ){
-	MotorSetInit( self.motors, ports );
+void IMEMotorSetInit( IMEMotorSet& self, tMotor* ports, int nMotors ){
+	MotorSetInit( self.motors, ports, nMotors );
 	IMEInit( self.ime, ports[0] );
 }
 

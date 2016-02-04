@@ -4,6 +4,9 @@
 #pragma systemFile
 
 
+#include <CKGeneral.h>
+
+
 
 // Use a floating point number in Volts by default
 #define MainBatteryVoltage()	(nAvgBatteryLevel / 1000.0)
@@ -14,13 +17,13 @@
 
 #ifdef VEX2 // Vex (EDR) Cortex 2.0
 
-	#define JoyChLX Ch4
-	#define JoyChLY Ch3
-	#define JoyChRX Ch1
-	#define JoyChRY Ch2
+	#define ChJoyLX Ch4
+	#define ChJoyLY Ch3
+	#define ChJoyRX Ch1
+	#define ChJoyRY Ch2
 
-	#define MotorPowerMax			127.0
-	#define	ControllerJoyMax	127.0
+	#define FullMotorPower	127.0
+	#define	FullJoystick		127.0
 
 	//TODO: will this ever apply to cortex?
 	#define DrawSizeX		10
@@ -35,7 +38,7 @@
 
 
 	#define TicksPerRev_393Standard			627.2
-	#define TicksPerRev_393HighSpeed		392
+	#define TicksPerRev_393HighSpeed		392.0
 	#define TicksPerRev_393Turbo				261.333
 
 	#define Standard393RPM		100
@@ -68,13 +71,13 @@
 #else if defined(VexIQ)
 
 
-	#define JoyChLX ChB
-	#define JoyChLY ChA
-	#define JoyChRX ChC
-	#define JoyChRY ChD
+	#define ChJoyLX ChB
+	#define ChJoyLY ChA
+	#define ChJoyRX ChC
+	#define ChJoyRY ChD
 
-	#define MotorPowerMax			100.0
-	#define	ControllerJoyMax	100.0
+	#define FullMotorPower	100.0
+	#define	FullJoystick		100.0
 
 	#define DrawSizeX		128
 	#define DrawSizeY		 44
@@ -87,6 +90,23 @@
 
 
 
+
+int motorPower( float proportionalPower ){
+	return (int)round( bound(proportionalPower, -1, 1) * FullMotorPower );
+}
+
+
+
+void setMotorPower( tMotor m, float proportionalPower ){
+	motor[m] = motorPower( proportionalPower );
+}
+
+
+
+
+float joystick( TVexJoysticks joyChannel ){
+	return (float)getJoystickValue(joyChannel) / FullJoystick;
+}
 
 
 

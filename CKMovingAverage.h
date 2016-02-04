@@ -5,8 +5,8 @@
 
 
 
-#ifndef CKMovingAverageSize
-#define CKMovingAverageSize 5
+#ifndef CKMovingAverageCapacity
+#define CKMovingAverageCapacity 15
 #endif
 
 
@@ -16,15 +16,20 @@
 
 
 struct MovingAverage {
-	CKMovingAverageSampleType samples[CKMovingAverageSize];
-	unsigned int iSample;
+	CKMovingAverageSampleType samples[CKMovingAverageCapacity];
+	int NSamples;
+	int iSample;
 	CKMovingAverageSampleType sum;
 };
 
 
 
-void MovingAverageInit( MovingAverage& self ){
-	memset( self.samples, 0, sizeof(CKMovingAverageSampleType)*CKMovingAverageSize );
+void MovingAverageInit( MovingAverage& self, int nSamples ){
+	ASSERT( nSamples <= CKMovingAverageCapacity );
+
+	memset( self.samples, 0, sizeof(CKMovingAverageSampleType)*CKMovingAverageCapacity );
+
+	self.NSamples = nSamples;
 	self.sum = 0;
 	self.iSample = 0;
 }
@@ -33,12 +38,12 @@ void MovingAverageInit( MovingAverage& self ){
 void nextSample( MovingAverage& self, CKMovingAverageSampleType sample ){
 	self.sum += sample - self.samples[self.iSample];
 	self.samples[self.iSample] = sample;
-	self.iSample = (self.iSample + 1) % CKMovingAverageSize;
+	self.iSample = (self.iSample + 1) % self.NSamples;
 }
 
 
 CKMovingAverageSampleType getAverage( MovingAverage& self ){
-	return self.sum / CKMovingAverageSize;
+	return self.sum / self.NSamples;
 }
 
 
