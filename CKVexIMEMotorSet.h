@@ -19,9 +19,9 @@ struct IMEMotorSet {
 
 
 
-void IMEMotorSetInit( IMEMotorSet& self, tMotor* ports, int nMotors ){
+void IMEMotorSetInit( IMEMotorSet& self, tMotor* ports, int nMotors, Motor393GearBox gearbox = M393Standard ){
 	MotorSetInit( self.motors, ports, nMotors );
-	IMEInit( self.ime, ports[0] );
+	IMEInit( self.ime, ports[0], gearbox );
 }
 
 
