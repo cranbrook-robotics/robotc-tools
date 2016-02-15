@@ -31,6 +31,7 @@ struct IME {
 	float acceleration; // radians/second^2
 
 	long time0; // Used for calculating velocity
+	float dt; // time since last update (seconds)
 };
 
 
@@ -70,20 +71,20 @@ void measure( IME& self ){
 	self.position += dx;
 
 	// time period since last time (seconds).
-	float dt = (float)(now - self.time0) / 1000.0;
+	self.dt = (float)(now - self.time0) / 1000.0;
 
 	// We'll be dividing by dt, so...
-	if( dt == 0 ) dt = 1;
+	if( self.dt == 0 ) self.dt = 1;
 
 	// Save the previous velocity measurement before we overwrite it.
 	float velocity0 = self.velocity;
 
 	// Calculate the new velocity (radians per second).
-	self.velocity = dx / dt;
+	self.velocity = dx / self.dt;
 
 	// Change in velocity so we can have an acceleration.
 	float dv = self.velocity - velocity0;
-	self.acceleration = dv / dt;
+	self.acceleration = dv / self.dt;
 
 	// Save the timestamp of this measurement for next time.
 	self.time0 = now;
