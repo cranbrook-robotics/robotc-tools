@@ -60,10 +60,10 @@ void setPower( MotorSet& self, float power ){
 
 void gradualStop( MotorSet& self ){
 	float s = sgn( self.power );
-	for( float p = fabs(self.power); p > 0; p -= 0.01 ){
-		setPower( self, s*p );
-		delay(20);
-	}
+	//for( float p = fabs(self.power); p > 0; p -= 0.01 ){
+	//	setPower( self, s*p );
+	//	delay(20);
+	//}
 	setPower( self, 0 );
 }
 
