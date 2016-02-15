@@ -4,10 +4,10 @@
 #pragma systemFile
 
 
-#define min(a,b) (((a)<(b))?(a):(b))
-#define max(a,b) (((a)>(b))?(a):(b))
+#define minimum(a,b) (((a)<(b))?(a):(b))
+#define maximum(a,b) (((a)>(b))?(a):(b))
 
-#define bound(x, a, b)	(min( max(x, a), b ))
+#define bound(x, a, b)	(minimum( maximum(x, a), b ))
 
 
 
