@@ -85,7 +85,7 @@ void update( FlywheelSpeedController& self ){
 
 	// Measure the instantaneous motor speed, and update the average speed
 	measure( self.flywheelMotors );
-	nextSample( self.maFlywheelSpeed, self.flywheelMotors.ime.velocity );
+	nextSample( self.maFlywheelSpeed, fabs(self.flywheelMotors.ime.velocity) );
 	float measuredSpeed = getAverage( self.maFlywheelSpeed );
 
 	float previousError = self.speedError;
