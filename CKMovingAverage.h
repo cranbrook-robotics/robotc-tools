@@ -6,7 +6,7 @@
 
 
 #ifndef CKMovingAverageCapacity
-#define CKMovingAverageCapacity 15
+#define CKMovingAverageCapacity 8
 #endif
 
 

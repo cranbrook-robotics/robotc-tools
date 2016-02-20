@@ -8,7 +8,7 @@
 
 
 #ifndef CKMotorSetCapacity
-#define CKMotorSetCapacity 12
+#define CKMotorSetCapacity 8
 #endif
 
 

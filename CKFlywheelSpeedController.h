@@ -92,10 +92,12 @@ void update( FlywheelSpeedController& self ){
 
 	self.speedError = measuredSpeed - self.targetSpeed;
 	float eSquared = self.speedError * self.speedError;
+	float dt = self.flywheelMotors.ime.dt;
+	if( dt == 0 ) dt = 1;
 
 	float qTerm = sgn(self.speedError)*eSquared;
 	float iTerm = self.maSpeedError.sum;
-	float dTerm = (self.speedError - previousError) / self.flywheelMotors.ime.dt;
+	float dTerm = (self.speedError - previousError) / dt;
 
 	setPower( self, cruisingPower(self) - (self.Kq*qTerm + self.Kd*dTerm + self.Ki*iTerm) );
 }
