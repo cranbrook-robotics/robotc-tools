@@ -102,14 +102,17 @@ void setTargetSpeed( FlywheelSpeedController& self, float speed ){
 }
 
 
+float getMeasuredSpeed( FlywheelSpeedController& self ){
+	return getAverage( self.maFlywheelSpeed );
+}
 
 void update( FlywheelSpeedController& self ){
 	//nextSample( maBattery, MainBatteryVoltage() );
 
 	// Measure the instantaneous motor speed, and update the average speed
 	measure( self.flywheelMotors );
-	nextSample( self.maFlywheelSpeed, fabs(self.flywheelMotors.ime.velocity) );
-	float measuredSpeed = getAverage( self.maFlywheelSpeed );
+	nextSample( self.maFlywheelSpeed, abs(self.flywheelMotors.ime.velocity) );
+	float measuredSpeed = getMeasuredSpeed(self);
 
 	float previousError = self.speedError;
 

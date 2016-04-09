@@ -86,7 +86,13 @@ float MainBatteryVoltage() {
 	}
 
 	float powerExpanderVoltage( tSensors port ){
-		return 14.625 * normalizedAnalog(port);
+		float f;
+		#ifdef POWER_EXPANDER_A1
+			f = 22.45;
+		#else
+			f = 14.625;
+		#endif
+		return f * normalizedAnalog(port);
 	}
 
 //=====================
@@ -132,6 +138,11 @@ void setMotorPower( tMotor m, float proportionalPower ){
 
 float joystick( TVexJoysticks joyChannel ){
 	return (float)getJoystickValue(joyChannel) / FullJoystick;
+}
+
+
+int buttonsToPower( TVexJoysticks negBtn, TVexJoysticks posBtn ){
+	return vexRT[posBtn] ? FullMotorPower : (vexRT[negBtn] ? -FullMotorPower : 0);
 }
 
 
