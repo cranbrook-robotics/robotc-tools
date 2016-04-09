@@ -11,6 +11,7 @@
 
 
 
+
 struct FlywheelSpeedController {
 	IMEMotorSet flywheelMotors;
 
@@ -27,6 +28,9 @@ struct FlywheelSpeedController {
 	float Kq, Ki, Kd;
 
 	float controlPower;
+
+	tSensors powerExpanderVoltagePort;
+	float mainBatteryProportion;
 };
 
 
@@ -54,12 +58,31 @@ void FlywheelSpeedControllerInit
 
 	self.A = a;
 	self.B = b;
+
+	self.powerExpanderVoltagePort = NoPort;
+	self.mainBatteryProportion = 1.0;
+}
+
+
+void setFlywheelBatteryConfig( FlywheelSpeedController& self, tSensors vPort, float battProp ){
+	self.powerExpanderVoltagePort = vPort;
+	self.mainBatteryProportion = battProp;
+}
+
+
+float flywheelBatteryVoltage( FlywheelSpeedController& self ){
+	float vMain = MainBatteryVoltage();
+	tSensors vPort = self.powerExpanderVoltagePort;
+	if( vPort == NoPort )
+		return vMain;
+	float vProport = self.mainBatteryProportion;
+	return vProport * vMain + (1 - vProport) * powerExpanderVoltage(vPort);
 }
 
 
 float cruisingPower( FlywheelSpeedController& self ){
 	if( self.targetSpeed < 1 ) return 0;
-	return (self.A * exp( self.B * self.targetSpeed )) / MainBatteryVoltage();
+	return (self.A * exp( self.B * self.targetSpeed )) / flywheelBatteryVoltage(self);
 	//getAverage( maBattery );
 }
 

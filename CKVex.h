@@ -9,10 +9,15 @@
 
 
 // Use a floating point number in Volts by default
-#define MainBatteryVoltage()	(nAvgBatteryLevel / 1000.0)
+float MainBatteryVoltage() {
+	return nAvgBatteryLevel / 1000.0;
+}
 
 
 #define isPressed(port)		(!SensorValue[(port)])
+
+
+#define NoPort		((tSensors)-1)
 
 
 #ifdef VEX2 // Vex (EDR) Cortex 2.0
@@ -33,17 +38,30 @@
 	enum Motor393GearBox {
 		M393Standard,
 		M393HighSpeed,
-		M393Turbo
+		M393Turbo,
+		M393NGearboxTypes
 	};
-
-
-	#define TicksPerRev_393Standard			627.2
-	#define TicksPerRev_393HighSpeed		392.0
-	#define TicksPerRev_393Turbo				261.333
 
 	#define Standard393RPM		100
 	#define HighSpeed393RPM		160
 	#define Turbo393RPM				240
+
+	//const float M393InternalGearRatio[M393NGearboxTypes] = {
+	//	1.0,
+	//	1.6,
+	//	2.4
+	//};
+
+	//const float M393RPM[M393NGearboxTypes] = {
+	//	Standard393RPM /
+
+	//const float M393IMETicksPerRev[M393NGearboxTypes] = {
+
+	//};
+
+	#define TicksPerRev_393Standard			627.2
+	#define TicksPerRev_393HighSpeed		392.0
+	#define TicksPerRev_393Turbo				261.333
 
 
 	#define SingleWireEncoderTicksPerRev	180
@@ -59,9 +77,16 @@
 	}
 
 
+	float normalizedAnalog( tSensors port ){
+		return SensorValue[port] / 4095.0;
+	}
 
 	float potentiometer( tSensors port ){
-		return SensorValue[port] / 4095.0;
+		return normalizedAnalog(port);
+	}
+
+	float powerExpanderVoltage( tSensors port ){
+		return 14.625 * normalizedAnalog(port);
 	}
 
 //=====================
@@ -76,6 +101,7 @@
 	#define ChJoyRX ChC
 	#define ChJoyRY ChD
 
+	//TODO: not sure about these...
 	#define FullMotorPower	100.0
 	#define	FullJoystick		100.0
 
