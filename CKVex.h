@@ -141,10 +141,17 @@ float joystick( TVexJoysticks joyChannel ){
 }
 
 
+int buttonToPower( TVexJoysticks onBtn ){
+	return vexRT[onBtn] ? FullMotorPower : 0;
+}
+
+
 int buttonsToPower( TVexJoysticks negBtn, TVexJoysticks posBtn ){
 	return vexRT[posBtn] ? FullMotorPower : (vexRT[negBtn] ? -FullMotorPower : 0);
 }
 
+// e.g. Btn5 for BtnGroup 
+#define buttonGroupToPower(BtnGroup) (buttonsToPower( BtnGroup##D, BtnGroup##U ))
 
 
 #endif
