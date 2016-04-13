@@ -46,11 +46,10 @@ void FlywheelSpeedControllerInit
 			Motor393GearBox gearbox = M393Standard
 )
 {
-	for(int i = 0 ; i < (int)nMotors; ++i)writeDebugStreamLine("%d", ports[i]);
 	IMEMotorSetInit( self.flywheelMotors, ports, nMotors, gearbox );
 
-	MovingAverageInit( self.maFlywheelSpeed, 6 );
-	MovingAverageInit( self.maSpeedError, 4 );
+	MovingAverageInit( self.maFlywheelSpeed, 4 );
+	MovingAverageInit( self.maSpeedError, 8 );
 
 	self.Kq = q;
 	self.Ki = i;
@@ -117,6 +116,7 @@ void update( FlywheelSpeedController& self ){
 	float previousError = self.speedError;
 
 	self.speedError = measuredSpeed - self.targetSpeed;
+	nextSample( self.maSpeedError, self.speedError );
 	float eSquared = self.speedError * self.speedError;
 	float dt = self.flywheelMotors.ime.dt;
 	if( dt == 0 ) dt = 1;
