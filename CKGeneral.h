@@ -3,6 +3,7 @@
 
 #pragma systemFile
 
+#define absolute(x)	((x) < 0 ? -(x) : (x))
 
 #define minimum(a,b) (((a)<(b))?(a):(b))
 #define maximum(a,b) (((a)>(b))?(a):(b))
