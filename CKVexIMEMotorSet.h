@@ -27,6 +27,19 @@ void IMEMotorSetInit( IMEMotorSet& self, tMotor* ports, int nMotors, Motor393Gea
 
 
 
+void setGearbox( IMEMotorSet& self, Motor393GearBox gearbox ){
+	setGearbox( self.ime, gearbox );
+}
+
+
+
+
+void setMotorPortOfIME( IMEMotorSet& self, tMotor port ){
+	self.ime.port = port;
+}
+
+
+
 
 void setPower( IMEMotorSet& self, float power ){
 	setPower( self.motors, power );

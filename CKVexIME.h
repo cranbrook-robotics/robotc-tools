@@ -54,6 +54,13 @@ void IMEInit( IME& self, tMotor port, Motor393GearBox gearbox = M393Standard ){
 
 
 
+void setGearbox( IME& self, Motor393GearBox gearbox ){
+	self.gearbox = gearbox;
+}
+
+
+
+
 
 void measure( IME& self ){
 
