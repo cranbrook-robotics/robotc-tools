@@ -57,13 +57,25 @@ void FlywheelSpeedControllerInit( FlywheelSpeedController& self ){
 
 void FlywheelSpeedControllerInit(
 			FlywheelSpeedController& self,
-			float a, float b,
 			tMotor* ports, int nMotors,
 			Motor393GearBox gearbox = M393Standard
 ){
 	FlywheelSpeedControllerInit(self);
 
 	IMEMotorSetInit( self.flywheelMotors, ports, nMotors, gearbox );
+}
+
+
+
+
+
+void FlywheelSpeedControllerInit(
+			FlywheelSpeedController& self,
+			float a, float b,
+			tMotor* ports, int nMotors,
+			Motor393GearBox gearbox = M393Standard
+){
+	FlywheelSpeedControllerInit( self, ports, nMotors, gearbox );
 
 	self.A = a;
 	self.B = b;
@@ -85,6 +97,20 @@ void FlywheelSpeedControllerInit(
 	self.Kp = p;
 	self.Ki = i;
 	self.Kd = d;
+}
+
+
+
+
+// LEGACY to not break the home boyz' code
+void FlywheelSpeedControllerInit(
+			FlywheelSpeedController& self,
+			float q, float i, float d,
+			float a, float b,
+			tMotor* ports, int nMotors,
+			Motor393GearBox gearbox = M393Standard
+){
+	FlywheelSpeedControllerInit( self, a, b, q, 0, i, d, ports, nMotors, gearbox );
 }
 
 
@@ -166,27 +192,40 @@ float getMeasuredSpeed( FlywheelSpeedController& self ){
 
 
 
-void update( FlywheelSpeedController& self ){
-	//nextSample( maBattery, MainBatteryVoltage() );
+float getMeasuredAcceleration( FlywheelSpeedController& self ){
+	return self.flywheelMotors.ime.acceleration;
+}
 
+
+
+
+void measure( FlywheelSpeedController& self ){
 	// Measure the instantaneous motor speed, and update the average speed
 	measure( self.flywheelMotors );
 	nextSample( self.maFlywheelSpeed, absolute(self.flywheelMotors.ime.velocity) );
+}
+
+
+
+
+void update( FlywheelSpeedController& self ){
+	measure( self );
 	float measuredSpeed = getMeasuredSpeed(self);
 
 	float previousError = self.speedError;
-
 	self.speedError = measuredSpeed - self.targetSpeed;
+
 	nextSample( self.maSpeedError, self.speedError );
 	float eSquared = self.speedError * self.speedError;
 	float dt = self.flywheelMotors.ime.dt;
 	if( dt == 0 ) dt = 1;
 
 	float qTerm = sgn(self.speedError)*eSquared;
+	float pTerm = self.speedError;
 	float iTerm = self.maSpeedError.sum;
 	float dTerm = (self.speedError - previousError) / dt;
 
-	setPower( self, cruisingPower(self) - (self.Kq*qTerm + self.Kd*dTerm + self.Ki*iTerm) );
+	setPower( self, cruisingPower(self) - (self.Kq*qTerm + self.Kp*pTerm + self.Ki*iTerm + self.Kd*dTerm) );
 }
 
 
