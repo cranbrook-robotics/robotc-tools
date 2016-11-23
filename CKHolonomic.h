@@ -67,7 +67,7 @@ void setDriveHMR(HolonomicBase& self, float driveHeading, float driveMagnitude, 
 		// Incorporate both the translational vector (relative to this wheel), as
 		// well as the rotation.  This addition of the rotation is what causes
 		// the motor powers to sometimes go over the full power amount.
-		float thisPower = driveMagnitude * cos(angleWithTarget) + driveRotation;
+		float thisPower = driveMagnitude * cos(angleWithTarget) - driveRotation;
 
 		self.wheelPowers[i] = thisPower;
 
