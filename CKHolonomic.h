@@ -88,16 +88,31 @@ void setDriveHMR(HolonomicBase& self, float driveHeading, float driveMagnitude, 
 
 
 
+void setDriveHMRFieldBased(HolonomicBase& self, float driveHeading, float driveMagnitude, float driveRotation, float robotHeading) {
+	setDriveHMR(self, driveHeading - robotHeading, driveMagnitude, driveRotation);
+}
 
-void setDriveXYR(HolonomicBase& self, float driveX, float driveY, float driveRotation) {
+
+
+
+void setDriveXYRFieldBased(HolonomicBase& self, float driveX, float driveY, float driveRotation, float robotHeading) {
 
 	// Transform the translational drive control vector from Cartesian
 	// form into angle & magnitude form.
 	float driveHeading = atan2(driveY, driveX);
 	float driveMagnitude = sqrt( driveX*driveX + driveY*driveY );
 
-	setDriveHMR(self, driveHeading, driveMagnitude, driveRotation);
+	setDriveHMRFieldBased(self, driveHeading, driveMagnitude, driveRotation, robotHeading);
 }
+
+
+
+
+void setDriveXYR(HolonomicBase& self, float driveX, float driveY, float driveRotation) {
+	setDriveXYRFieldBased(self, driveX, driveY, driveRotation, 0);
+}
+
+
 
 
 // while(true){
