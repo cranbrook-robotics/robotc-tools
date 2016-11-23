@@ -17,7 +17,7 @@ struct HolonomicBase {
 
 	float wheelPowers[MaxNWheels];
 
-}
+};
 
 
 
