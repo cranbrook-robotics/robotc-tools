@@ -26,6 +26,44 @@ struct HolonomicBase {
 // TVexJoysticks JoyChDriveR = ChJoyRX;
 
 
+/**************************************************************
+
+  Example motor port setup for an X-Drive base
+  (four omni-wheels at the corners of a rectangular chasis)
+
+      ________
+   3 /        \ 2
+    /          \
+    |          |        + x-axis
+    |          |       ---------->
+    \          /
+   4 \________/ 1
+
+  The array of motor ports passed into the Init method
+  should be in the order illustrated above.
+  The first motor port in the array is the rear right
+  in the above example because it has a 45 degree angle
+  heading with respect to the + x-axis, which is the
+  lowest positive angle heading of all the wheels.
+  The general rule is to arrange the array of motor ports
+  in ascending order of their respective wheel headings.
+
+
+  Thus, here is an example with a triangular base:
+
+         2
+        ___
+       /   \
+      /     \
+     /       \
+    /         \
+  3 \_________/ 1
+
+
+**************************************************************/
+
+
+
 
 
 void InitHolonomicBase(HolonomicBase& self, tMotor* ports, int NWheels = 4) {
