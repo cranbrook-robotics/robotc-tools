@@ -6,12 +6,15 @@
 #include <CKVexMotorSet.h>
 
 struct TankDrive {
-	MotorSet LEFTDRIVE, RIGHTDRIVE;
-	tSensors LEFTENCODER, RIGHTENCODER;
+	MotorSet LEFTDRIVE;
+	MotorSet RIGHTDRIVE;
+	tSensors LEFTENCODER;
+	tSensors RIGHTENCODER;
 	tSensors GYROSCOPE;
 	int WHEELDIAMETER;
 	float KPDRIVE;
-}
+};
+
 
 void TankDriveInit (TankDrive& self, MotorSet lSide, MotorSet rSide, tSensors lEnc, tSensors rEnc, tSensors mainGyro, int wheelD, float newKP)
 {
@@ -24,10 +27,10 @@ void TankDriveInit (TankDrive& self, MotorSet lSide, MotorSet rSide, tSensors lE
 	self.KPDRIVE = newKP;
 }
 
-void setDriveTank (TankDrive& self, TVexJoysticks lStick, TVexJoysticks rStick, float threshold)
+void setDriveTank (TankDrive& self, float threshold)
 {
-		setPower(self.LEFTDRIVE, abs(vexRT[lStick]) > threshold ? vexRT[lStick]/127.0 : 0);
-		setPower(self.RIGHTDRIVE, abs(vexRT[rStick]) > threshold ? vexRT[rStick]/127.0 : 0);
+		setPower(self.LEFTDRIVE, (abs(vexRT[Ch3]) < threshold) ? 0 : vexRT[Ch3]/127.);
+		setPower(self.RIGHTDRIVE, (abs(vexRT[Ch2]) < threshold) ? 0 : vexRT[Ch2]/127.);
 }
 
 void driveT (TankDrive& self, bool forward, int time, float powerLevel)
@@ -101,21 +104,21 @@ void driveBackward (TankDrive& self, float inchesToDrive, float basePower)
 	setPower(self.LEFTDRIVE, 0);
 }
 
-void turnRight (TankDrive& self, float degreesToTurn)
+void turnRight (TankDrive& self, float degreesToTurn, float basePower)
 {
-	int deciDegreesToTurn = (degreesToTurn-6) * 10;
+	int deciDegreesToTurn = degreesToTurn * 10;
 	SensorValue[self.GYROSCOPE] = 0;
 	int gyroReading = -SensorValue[self.GYROSCOPE];
 	while (gyroReading != deciDegreesToTurn)
 	{
 		gyroReading = -SensorValue[self.GYROSCOPE];
 		if(gyroReading < deciDegreesToTurn){
-			setPower(self.RIGHTDRIVE, -0.5);
-			setPower(self.LEFTDRIVE, 0.5);
+			setPower(self.RIGHTDRIVE, -1*basePower);
+			setPower(self.LEFTDRIVE, basePower);
 		}
 		if(gyroReading > deciDegreesToTurn){
-			setPower(self.RIGHTDRIVE, 0.5);
-			setPower(self.LEFTDRIVE, -0.5);
+			setPower(self.RIGHTDRIVE, basePower);
+			setPower(self.LEFTDRIVE, -1*basePower);
 		}
 	}
 	setPower(self.LEFTDRIVE, 0.05);
@@ -125,9 +128,9 @@ void turnRight (TankDrive& self, float degreesToTurn)
 	setPower(self.RIGHTDRIVE, 0);
 }
 
-void turnLeft (TankDrive& self, float degreesToTurn)
+void turnLeft (TankDrive& self, float degreesToTurn, float basePower)
 {
-	int deciDegreesToTurn = (degreesToTurn-6) * 10;
+	int deciDegreesToTurn = degreesToTurn * 10;
 	SensorValue[self.GYROSCOPE] = 0;
 	int gyroReading = SensorValue[self.GYROSCOPE];
 	while (gyroReading != deciDegreesToTurn)
@@ -135,13 +138,13 @@ void turnLeft (TankDrive& self, float degreesToTurn)
 		gyroReading = SensorValue[self.GYROSCOPE];
 		if (gyroReading < deciDegreesToTurn)
 		{
-			setPower(self.RIGHTDRIVE, 0.5);
-			setPower(self.LEFTDRIVE, -0.5);
+			setPower(self.RIGHTDRIVE, basePower);
+			setPower(self.LEFTDRIVE, -1*basePower);
 		}
 		if (gyroReading > deciDegreesToTurn)
 		{
-			setPower(self.RIGHTDRIVE, -0.5);
-			setPower(self.LEFTDRIVE, 0.5);
+			setPower(self.RIGHTDRIVE, -1*basePower);
+			setPower(self.LEFTDRIVE, basePower);
 		}
 	}
 	setPower(self.LEFTDRIVE, -0.05);
