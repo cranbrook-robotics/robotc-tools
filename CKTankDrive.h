@@ -16,10 +16,10 @@ struct TankDrive {
 };
 
 
-void TankDriveInit (TankDrive& self, MotorSet lSide, MotorSet rSide, tSensors lEnc, tSensors rEnc, tSensors mainGyro, int wheelD, float newKP)
+void TankDriveInit (TankDrive& self, tMotor* lSide, tMotor* rSide, int motorsPerSide, tSensors lEnc, tSensors rEnc, tSensors mainGyro, int wheelD, float newKP)
 {
-	self.LEFTDRIVE = lSide;
-	self.RIGHTDRIVE = rSide;
+	MotorSetInit(self.LEFTDRIVE, lSide, motorsPerSide);
+	MotorSetInit(self.RIGHTDRIVE, rSide, motorsPerSide);
 	self.LEFTENCODER = lEnc;
 	self.RIGHTENCODER = rEnc;
 	self.GYROSCOPE = mainGyro;
