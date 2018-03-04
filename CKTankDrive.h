@@ -13,7 +13,7 @@ struct TankDrive {
 	float KPDRIVE;
 }
 
-void tankDriveInit (TankDrive& self, MotorSet lSide, MotorSet rSide, tSensors lEnc, tSensors rEnc, tSensors mainGyro, int wheelD, float newKP)
+void TankDriveInit (TankDrive& self, MotorSet lSide, MotorSet rSide, tSensors lEnc, tSensors rEnc, tSensors mainGyro, int wheelD, float newKP)
 {
 	self.LEFTDRIVE = lSide;
 	self.RIGHTDRIVE = rSide;
@@ -24,16 +24,16 @@ void tankDriveInit (TankDrive& self, MotorSet lSide, MotorSet rSide, tSensors lE
 	self.KPDRIVE = newKP;
 }
 
-void setDriveTank (TankDrive& self, word lStick, word rStick)
+void setDriveTank (TankDrive& self, TVexJoysticks lStick, TVexJoysticks rStick, float threshold)
 {
-		setPower(self.LEFTDRIVE, vexRT[lStick]/127.);
-		setPower(self.RIGHTDRIVE, vexRT[rStick]/127.);
+		setPower(self.LEFTDRIVE, abs(vexRT[lStick]) > threshold ? vexRT[lStick]/127.0 : 0);
+		setPower(self.RIGHTDRIVE, abs(vexRT[rStick]) > threshold ? vexRT[rStick]/127.0 : 0);
 }
 
-void driveT (TankDrive& self, bool forward, int time)
+void driveT (TankDrive& self, bool forward, int time, float powerLevel)
 {
-	setPower(self.LEFTDRIVE, forward ? 1 : -1);
-	setPower(self.RIGHTDRIVE, forward ? 1 : -1);
+	setPower(self.LEFTDRIVE, forward ? powerLevel : -1*powerLevel);
+	setPower(self.RIGHTDRIVE, forward ? powerLevel : -1*powerLevel);
 	delay(time);
 	setPower(self.LEFTDRIVE, forward ? -0.15 : 0.15);
 	setPower(self.RIGHTDRIVE, forward ? -0.15 : 0.15);
@@ -42,7 +42,7 @@ void driveT (TankDrive& self, bool forward, int time)
 	setPower(self.RIGHTDRIVE, 0);
 }
 
-void driveForward (TankDrive& self, float inchesToDrive)
+void driveForward (TankDrive& self, float inchesToDrive, float basePower)
 {
 
 	float ticksToDrive = 360 * inchesToDrive / (2 * PI * self.WHEELDIAMETER);
@@ -62,8 +62,8 @@ void driveForward (TankDrive& self, float inchesToDrive)
 		leftEncoderCount += SensorValue[self.LEFTENCODER];
 		SensorValue(self.LEFTENCODER) = 0;
 		float error = gyroReading;
-		setPower(self.RIGHTDRIVE, rightIsDone ? 0 : bound(0.75 - self.KPDRIVE*error, 0, 1));
-		setPower(self.LEFTDRIVE, leftIsDone ? 0 : bound(0.75 + self.KPDRIVE*error, 0, 1));
+		setPower(self.RIGHTDRIVE, rightIsDone ? 0 : bound(basePower - self.KPDRIVE*error, 0, 1));
+		setPower(self.LEFTDRIVE, leftIsDone ? 0 : bound(basePower + self.KPDRIVE*error, 0, 1));
 	}
 	setPower(self.RIGHTDRIVE, -0.15);
 	setPower(self.LEFTDRIVE, -0.15);
@@ -72,7 +72,7 @@ void driveForward (TankDrive& self, float inchesToDrive)
 	setPower(self.LEFTDRIVE, 0);
 }
 
-void driveBackward (TankDrive& self, float inchesToDrive)
+void driveBackward (TankDrive& self, float inchesToDrive, float basePower)
 {
 	float ticksToDrive = -360 * inchesToDrive / (2 * PI * self.WHEELDIAMETER);
 	SensorValue(self.LEFTENCODER) = 0;
@@ -91,8 +91,8 @@ void driveBackward (TankDrive& self, float inchesToDrive)
 		leftEncoderCount += SensorValue[self.LEFTENCODER];
 		SensorValue(self.LEFTENCODER) = 0;
 		float error = gyroReading;
-		setPower(self.RIGHTDRIVE, rightIsDone ? 0 : bound(-0.75 - self.KPDRIVE*error, -1, 0));
-		setPower(self.LEFTDRIVE, leftIsDone ? 0 : bound(-0.75 + self.KPDRIVE*error, -1, 0));
+		setPower(self.RIGHTDRIVE, rightIsDone ? 0 : bound(-1*basePower - self.KPDRIVE*error, -1, 0));
+		setPower(self.LEFTDRIVE, leftIsDone ? 0 : bound(-1*basePower + self.KPDRIVE*error, -1, 0));
 	}
 	setPower(self.RIGHTDRIVE, 0.15);
 	setPower(self.LEFTDRIVE, 0.15);
