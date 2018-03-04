@@ -109,7 +109,7 @@ void turnRight (TankDrive& self, float degreesToTurn, float basePower)
 	int deciDegreesToTurn = degreesToTurn * 10;
 	SensorValue[self.GYROSCOPE] = 0;
 	int gyroReading = -SensorValue[self.GYROSCOPE];
-	while (gyroReading != deciDegreesToTurn)
+	while (abs(gyroReading - deciDegreesToTurn) > 10)
 	{
 		gyroReading = -SensorValue[self.GYROSCOPE];
 		if(gyroReading < deciDegreesToTurn){
@@ -133,7 +133,7 @@ void turnLeft (TankDrive& self, float degreesToTurn, float basePower)
 	int deciDegreesToTurn = degreesToTurn * 10;
 	SensorValue[self.GYROSCOPE] = 0;
 	int gyroReading = SensorValue[self.GYROSCOPE];
-	while (gyroReading != deciDegreesToTurn)
+	while (abs(gyroReading - deciDegreesToTurn) > 10)
 	{
 		gyroReading = SensorValue[self.GYROSCOPE];
 		if (gyroReading < deciDegreesToTurn)
