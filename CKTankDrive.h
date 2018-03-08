@@ -49,7 +49,7 @@ void TankDriveInit (TankDrive& self, tMotor* lSide, tMotor* rSide, int motorsPer
 	self.turnThreshold = newTurnThreshold;
 }
 
-//Parameters: 
+//Parameters:
 //threshold - amount of joystick movement before drive responds, in [0,127]
 void setDriveTank (TankDrive& self, float threshold)
 {
@@ -98,7 +98,7 @@ void driveForward (TankDrive& self, float inchesToDrive, float basePower)
 		float error = gyroReading;
 		setPower(self.RIGHTDRIVE, rightIsDone ? 0 : bound(basePower - self.KPDRIVE*error, 0, 1));
 		setPower(self.LEFTDRIVE, leftIsDone ? 0 : bound(basePower + self.KPDRIVE*error, 0, 1));
-		delay(delayMS);
+		delay(self.delayMS);
 	}
 	setPower(self.RIGHTDRIVE, -0.15);
 	setPower(self.LEFTDRIVE, -0.15);
@@ -129,7 +129,7 @@ void driveBackward (TankDrive& self, float inchesToDrive, float basePower)
 		float error = gyroReading;
 		setPower(self.RIGHTDRIVE, rightIsDone ? 0 : bound(-1*basePower - self.KPDRIVE*error, -1, 0));
 		setPower(self.LEFTDRIVE, leftIsDone ? 0 : bound(-1*basePower + self.KPDRIVE*error, -1, 0));
-		delay(delayMS);
+		delay(self.delayMS);
 	}
 	setPower(self.RIGHTDRIVE, 0.15);
 	setPower(self.LEFTDRIVE, 0.15);
@@ -144,7 +144,7 @@ void turnRight (TankDrive& self, float degreesToTurn, float basePower)
 	basePower = bound(basePower, 0, 1);
 	SensorValue[self.GYROSCOPE] = 0;
 	int gyroReading = -SensorValue[self.GYROSCOPE];
-	while (abs(gyroReading - deciDegreesToTurn) > turnThreshold)
+	while (abs(gyroReading - deciDegreesToTurn) > self.turnThreshold)
 	{
 		gyroReading = -SensorValue[self.GYROSCOPE];
 		if(gyroReading < deciDegreesToTurn){
@@ -155,7 +155,7 @@ void turnRight (TankDrive& self, float degreesToTurn, float basePower)
 			setPower(self.RIGHTDRIVE, basePower);
 			setPower(self.LEFTDRIVE, -1*basePower);
 		}
-		delay(delayMS);
+		delay(self.delayMS);
 	}
 	setPower(self.LEFTDRIVE, 0.05);
 	setPower(self.RIGHTDRIVE, -0.05);
@@ -170,7 +170,7 @@ void turnLeft (TankDrive& self, float degreesToTurn, float basePower)
 	basePower = bound(basePower, 0, 1);
 	SensorValue[self.GYROSCOPE] = 0;
 	int gyroReading = SensorValue[self.GYROSCOPE];
-	while (abs(gyroReading - deciDegreesToTurn) > turnThreshold)
+	while (abs(gyroReading - deciDegreesToTurn) > self.turnThreshold)
 	{
 		gyroReading = SensorValue[self.GYROSCOPE];
 		if (gyroReading < deciDegreesToTurn)
@@ -183,7 +183,7 @@ void turnLeft (TankDrive& self, float degreesToTurn, float basePower)
 			setPower(self.RIGHTDRIVE, -1*basePower);
 			setPower(self.LEFTDRIVE, basePower);
 		}
-		delay(delayMS);
+		delay(self.delayMS);
 	}
 	setPower(self.LEFTDRIVE, -0.05);
 	setPower(self.RIGHTDRIVE, 0.05);
