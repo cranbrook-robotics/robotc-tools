@@ -20,6 +20,8 @@ struct TankDrive {
 	tSensors GYROSCOPE;
 	int WHEELDIAMETER;
 	float KPDRIVE;
+	float KIDRIVE;
+	float KDDRIVE;
 	int delayMS;
 	int turnThreshold;
 };
@@ -36,7 +38,10 @@ struct TankDrive {
 //int wheelD - diameter of wheel (in inches)
 //float newKP - coefficient for the proportional loop executed in driveForward and driveBackward functions
 
-void TankDriveInit (TankDrive& self, tMotor* lSide, tMotor* rSide, int motorsPerSide, tSensors lEnc, tSensors rEnc, tSensors mainGyro, int wheelD, float newKP, int newdelayMS, int newTurnThreshold)
+void TankDriveInit (TankDrive& self, tMotor* lSide, tMotor* rSide, int motorsPerSide,
+													tSensors lEnc, tSensors rEnc, tSensors mainGyro,
+													int wheelD, float newKP, float newKI,
+													float newKD, int newdelayMS, int newTurnThreshold)
 {
 	MotorSetInit(self.LEFTDRIVE, lSide, motorsPerSide);
 	MotorSetInit(self.RIGHTDRIVE, rSide, motorsPerSide);
@@ -45,6 +50,8 @@ void TankDriveInit (TankDrive& self, tMotor* lSide, tMotor* rSide, int motorsPer
 	self.GYROSCOPE = mainGyro;
 	self.WHEELDIAMETER = wheelD;
 	self.KPDRIVE = newKP;
+	self.KIDRIVE = newKI;
+	self.KDDRIVE = newKD;
 	self.delayMS = newdelayMS;
 	self.turnThreshold = newTurnThreshold;
 }
@@ -86,6 +93,7 @@ void driveForward (TankDrive& self, float inchesToDrive, float basePower)
 	bool rightIsDone = false, leftIsDone = false;
 	SensorValue(self.GYROSCOPE) = 0;
 	int gyroReading = SensorValue[self.GYROSCOPE];
+	float pidFinal = 0, pidIntegral = 0, pidDerivative = 0, pidLastError = 0, pidCurrentError = 0;
 	while (!rightIsDone || !leftIsDone)
 	{
 		rightIsDone = rightEncoderCount>=ticksToDrive;
@@ -95,9 +103,13 @@ void driveForward (TankDrive& self, float inchesToDrive, float basePower)
 		SensorValue(self.RIGHTENCODER) = 0;
 		leftEncoderCount += SensorValue[self.LEFTENCODER];
 		SensorValue(self.LEFTENCODER) = 0;
-		float error = gyroReading;
-		setPower(self.RIGHTDRIVE, rightIsDone ? 0 : bound(basePower - self.KPDRIVE*error, 0, 1));
-		setPower(self.LEFTDRIVE, leftIsDone ? 0 : bound(basePower + self.KPDRIVE*error, 0, 1));
+		pidLastError = pidCurrentError;
+		pidCurrentError = gyroReading;
+		pidIntegral += pidCurrentError;
+		pidDerivative = pidCurrentError - pidLastError;
+		pidFinal = self.KPDRIVE*pidCurrentError + self.KIDRIVE*pidIntegral + self.KDDRIVE*pidDerivative;
+		setPower(self.RIGHTDRIVE, rightIsDone ? 0 : bound(basePower - pidFinal, 0, 1));
+		setPower(self.LEFTDRIVE, leftIsDone ? 0 : bound(basePower + pidFinal, 0, 1));
 		delay(self.delayMS);
 	}
 	setPower(self.RIGHTDRIVE, -0.15);
@@ -117,6 +129,7 @@ void driveBackward (TankDrive& self, float inchesToDrive, float basePower)
 	bool rightIsDone = false, leftIsDone = false;
 	SensorValue(self.GYROSCOPE) = 0;
 	int gyroReading = SensorValue[self.GYROSCOPE];
+	float pidFinal = 0, pidIntegral = 0, pidDerivative = 0, pidLastError = 0, pidCurrentError = 0;
 	while (!rightIsDone || !leftIsDone)
 	{
 		rightIsDone = rightEncoderCount<=ticksToDrive;
@@ -126,9 +139,13 @@ void driveBackward (TankDrive& self, float inchesToDrive, float basePower)
 		SensorValue(self.RIGHTENCODER) = 0;
 		leftEncoderCount += SensorValue[self.LEFTENCODER];
 		SensorValue(self.LEFTENCODER) = 0;
-		float error = gyroReading;
-		setPower(self.RIGHTDRIVE, rightIsDone ? 0 : bound(-1*basePower - self.KPDRIVE*error, -1, 0));
-		setPower(self.LEFTDRIVE, leftIsDone ? 0 : bound(-1*basePower + self.KPDRIVE*error, -1, 0));
+		pidLastError = pidCurrentError;
+		pidCurrentError = gyroReading;
+		pidIntegral += pidCurrentError;
+		pidDerivative = pidCurrentError - pidLastError;
+		pidFinal = self.KPDRIVE*pidCurrentError + self.KIDRIVE*pidIntegral + self.KDDRIVE*pidDerivative;
+		setPower(self.RIGHTDRIVE, rightIsDone ? 0 : bound(-1*basePower - pidFinal, -1, 0));
+		setPower(self.LEFTDRIVE, leftIsDone ? 0 : bound(-1*basePower + pidFinal, -1, 0));
 		delay(self.delayMS);
 	}
 	setPower(self.RIGHTDRIVE, 0.15);
