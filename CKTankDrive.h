@@ -94,6 +94,7 @@ void driveForward (TankDrive& self, float inchesToDrive, float basePower)
 		float error = gyroReading;
 		setPower(self.RIGHTDRIVE, rightIsDone ? 0 : bound(basePower - self.KPDRIVE*error, 0, 1));
 		setPower(self.LEFTDRIVE, leftIsDone ? 0 : bound(basePower + self.KPDRIVE*error, 0, 1));
+		delay(35);
 	}
 	setPower(self.RIGHTDRIVE, -0.15);
 	setPower(self.LEFTDRIVE, -0.15);
@@ -124,6 +125,7 @@ void driveBackward (TankDrive& self, float inchesToDrive, float basePower)
 		float error = gyroReading;
 		setPower(self.RIGHTDRIVE, rightIsDone ? 0 : bound(-1*basePower - self.KPDRIVE*error, -1, 0));
 		setPower(self.LEFTDRIVE, leftIsDone ? 0 : bound(-1*basePower + self.KPDRIVE*error, -1, 0));
+		delay(35);
 	}
 	setPower(self.RIGHTDRIVE, 0.15);
 	setPower(self.LEFTDRIVE, 0.15);
@@ -149,6 +151,7 @@ void turnRight (TankDrive& self, float degreesToTurn, float basePower)
 			setPower(self.RIGHTDRIVE, basePower);
 			setPower(self.LEFTDRIVE, -1*basePower);
 		}
+		delay(35);
 	}
 	setPower(self.LEFTDRIVE, 0.05);
 	setPower(self.RIGHTDRIVE, -0.05);
@@ -176,6 +179,7 @@ void turnLeft (TankDrive& self, float degreesToTurn, float basePower)
 			setPower(self.RIGHTDRIVE, -1*basePower);
 			setPower(self.LEFTDRIVE, basePower);
 		}
+		delay(35);
 	}
 	setPower(self.LEFTDRIVE, -0.05);
 	setPower(self.RIGHTDRIVE, 0.05);
