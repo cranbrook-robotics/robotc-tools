@@ -20,6 +20,8 @@ struct TankDrive {
 	tSensors GYROSCOPE;
 	int WHEELDIAMETER;
 	float KPDRIVE;
+	int delayMS;
+	int turnThreshold;
 };
 
 
@@ -34,7 +36,7 @@ struct TankDrive {
 //int wheelD - diameter of wheel (in inches)
 //float newKP - coefficient for the proportional loop executed in driveForward and driveBackward functions
 
-void TankDriveInit (TankDrive& self, tMotor* lSide, tMotor* rSide, int motorsPerSide, tSensors lEnc, tSensors rEnc, tSensors mainGyro, int wheelD, float newKP)
+void TankDriveInit (TankDrive& self, tMotor* lSide, tMotor* rSide, int motorsPerSide, tSensors lEnc, tSensors rEnc, tSensors mainGyro, int wheelD, float newKP, int newdelayMS, int newTurnThreshold)
 {
 	MotorSetInit(self.LEFTDRIVE, lSide, motorsPerSide);
 	MotorSetInit(self.RIGHTDRIVE, rSide, motorsPerSide);
@@ -43,6 +45,8 @@ void TankDriveInit (TankDrive& self, tMotor* lSide, tMotor* rSide, int motorsPer
 	self.GYROSCOPE = mainGyro;
 	self.WHEELDIAMETER = wheelD;
 	self.KPDRIVE = newKP;
+	self.delayMS = newdelayMS;
+	self.turnThreshold = newTurnThreshold;
 }
 
 //Parameters: 
@@ -94,7 +98,7 @@ void driveForward (TankDrive& self, float inchesToDrive, float basePower)
 		float error = gyroReading;
 		setPower(self.RIGHTDRIVE, rightIsDone ? 0 : bound(basePower - self.KPDRIVE*error, 0, 1));
 		setPower(self.LEFTDRIVE, leftIsDone ? 0 : bound(basePower + self.KPDRIVE*error, 0, 1));
-		delay(35);
+		delay(delayMS);
 	}
 	setPower(self.RIGHTDRIVE, -0.15);
 	setPower(self.LEFTDRIVE, -0.15);
@@ -125,7 +129,7 @@ void driveBackward (TankDrive& self, float inchesToDrive, float basePower)
 		float error = gyroReading;
 		setPower(self.RIGHTDRIVE, rightIsDone ? 0 : bound(-1*basePower - self.KPDRIVE*error, -1, 0));
 		setPower(self.LEFTDRIVE, leftIsDone ? 0 : bound(-1*basePower + self.KPDRIVE*error, -1, 0));
-		delay(35);
+		delay(delayMS);
 	}
 	setPower(self.RIGHTDRIVE, 0.15);
 	setPower(self.LEFTDRIVE, 0.15);
@@ -140,7 +144,7 @@ void turnRight (TankDrive& self, float degreesToTurn, float basePower)
 	basePower = bound(basePower, 0, 1);
 	SensorValue[self.GYROSCOPE] = 0;
 	int gyroReading = -SensorValue[self.GYROSCOPE];
-	while (abs(gyroReading - deciDegreesToTurn) > 10)
+	while (abs(gyroReading - deciDegreesToTurn) > turnThreshold)
 	{
 		gyroReading = -SensorValue[self.GYROSCOPE];
 		if(gyroReading < deciDegreesToTurn){
@@ -151,7 +155,7 @@ void turnRight (TankDrive& self, float degreesToTurn, float basePower)
 			setPower(self.RIGHTDRIVE, basePower);
 			setPower(self.LEFTDRIVE, -1*basePower);
 		}
-		delay(35);
+		delay(delayMS);
 	}
 	setPower(self.LEFTDRIVE, 0.05);
 	setPower(self.RIGHTDRIVE, -0.05);
@@ -166,7 +170,7 @@ void turnLeft (TankDrive& self, float degreesToTurn, float basePower)
 	basePower = bound(basePower, 0, 1);
 	SensorValue[self.GYROSCOPE] = 0;
 	int gyroReading = SensorValue[self.GYROSCOPE];
-	while (abs(gyroReading - deciDegreesToTurn) > 10)
+	while (abs(gyroReading - deciDegreesToTurn) > turnThreshold)
 	{
 		gyroReading = SensorValue[self.GYROSCOPE];
 		if (gyroReading < deciDegreesToTurn)
@@ -179,7 +183,7 @@ void turnLeft (TankDrive& self, float degreesToTurn, float basePower)
 			setPower(self.RIGHTDRIVE, -1*basePower);
 			setPower(self.LEFTDRIVE, basePower);
 		}
-		delay(35);
+		delay(delayMS);
 	}
 	setPower(self.LEFTDRIVE, -0.05);
 	setPower(self.RIGHTDRIVE, 0.05);
